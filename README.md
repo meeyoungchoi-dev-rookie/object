@@ -27,3 +27,16 @@
 + 가정이 깨지는 순간 코드가 흔들리게 된다
 + 객체 사이의 결합도를 낮춰 변경이 용이한 설계를 만들어야 한다
 + [티켓 애플리케이션 무엇이 문제인가](https://unique-wandflower-4cc.notion.site/02-ed75306865e84c49aceb9a20cac5b22e)
+
+
+
+### 티켓 애플리케이션 구조 개선
+### 캡슐화를 사용하여 객체 내부 로직을 감춘다
++ 외부에서 객체 내부에 직접 접근할 수 없게 처리
+### 무엇이 개선되었는가
+- Audience는 자신의 Bag을 직접 관리한다
+- TicketSeller는 직접 Ticket을 관리한다
+- Audience와 TicketSeller의 내부 구현이 변경되어도 Theater를 함께 변경할 필요가 없다
+- Audience가 작은 지갑을 소유하도록 코드를 변경하거나
+- TicketSeller가 은행에 돈을 보관하도록 보관하려면 Audience 클래스와 TickeSeller 클래스 내부만 변경하면 된다
+- 따라서 수정된 코드는 읽는

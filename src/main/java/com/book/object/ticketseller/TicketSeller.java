@@ -1,6 +1,8 @@
 package com.book.object.ticketseller;
 
+import com.book.object.audience.Audience;
 import com.book.object.office.TicketOffice;
+
 
 public class TicketSeller {
     private TicketOffice ticketOffice;
@@ -9,7 +11,7 @@ public class TicketSeller {
         this.ticketOffice = ticketOffice;
     }
 
-    public TicketOffice getTicketOffice() {
-        return ticketOffice;
+    public void sellTo(Audience audience) {
+        ticketOffice.plusMoney(audience.buy(ticketOffice.getTicket()));
     }
 }
