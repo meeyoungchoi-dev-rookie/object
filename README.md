@@ -39,4 +39,177 @@
 - Audience와 TicketSeller의 내부 구현이 변경되어도 Theater를 함께 변경할 필요가 없다
 - Audience가 작은 지갑을 소유하도록 코드를 변경하거나
 - TicketSeller가 은행에 돈을 보관하도록 보관하려면 Audience 클래스와 TickeSeller 클래스 내부만 변경하면 된다
-- 따라서 수정된 코드는 읽는
+- 따라서 수정된 코드는 읽는 사람과의 의사소통과 변경 용이성이 확실히 개선되었다
+
+`Bag`
+
+- Bag 객체는 자기 자신을 스스로 책임지지 않고 Audience 객체에 끌려다니는 수동적인 존재이다
+- Bag의 내부 상태에 접근하는 로직을 Bag 안으로 캡슐화 하여 결합도를 낮춘다
+- Bag을 자율적인 존재로 바꾸기 위해 Bag의 내부상태 로직을 hold 메서드로 감싸 Bag 안으로 캡슐화 한다
+- Audience가 Bag 인터페이스에만 의존하도록 코드 수정
+- `수정 전`
+
+```java
+
+public class Audience {
+    private Bag bag;
+
+    public Audience(Bag bag) {
+        this.bag = bag;
+    }
+
+    public Long buy(Ticket ticket) {
+        if (bag.hasInvitation()) {
+            bag.setTicket(ticket);
+            return 0L;
+        } else {
+            bag.setTicket(ticket);
+            bag.minusAmount(ticket.getFee());
+            return ticket.getFee();
+        }
+    }
+}
+```
+
+- `수정 후`
+- Bag객체가 스스로 초대장을 꺼내서 티켓으로 교환한다
+- 초대장이 없는 경우 티켓을 구매한다
+- Audience 객체는 Bag 객체의 hold 메서드에게 역할을 위임한다
+
+```java
+
+public class Audience {
+    private Bag bag;
+
+    public Audience(Bag bag) {
+        this.bag = bag;
+    }
+
+    public Long buy(Ticket ticket) {
+        return bag.hold(ticket);
+    }
+}
+```
+
+```java
+
+public class Bag {
+    private Long money;
+    private Invitation invitation;
+    private Ticket ticket;
+
+    public Long hold(Ticket ticket) {
+        if (hasInvitation()) {
+            setTicket(ticket);
+            return 0L;
+        } else {
+            setTicket(ticket);
+            minusAmount(ticket.getFee());
+            return ticket.getFee();
+        }
+    }
+
+    /*
+    * 초대장 소유여부 판단
+    * */
+    private boolean hasInvitation() {
+        return invitation != null;
+    }
+
+    /**
+     * 초대장을 티켓으로 교환한다
+     * @param ticket
+     */
+    private void setTicket(Ticket ticket) {
+        this.ticket = ticket;
+    }
+
+    /**
+     * 현금 차감
+     */
+    private void minusAmount(Long money) {
+        this.money -= money;
+    }
+
+    /**
+     * 현금 총액
+     */
+    public void plusMoney(Long money) {
+        this.money += money;
+    }
+
+}
+```
+
+`TicketSeller`
+
+- TicketOffice는 스스로 티켓을 관리하지 못하고 TicketSeller 객체에 의존하고 있다
+
+```java
+
+public class TicketSeller {
+    private TicketOffice ticketOffice;
+
+    public TicketSeller(TicketOffice ticketOffice) {
+        this.ticketOffice = ticketOffice;
+    }
+
+    public void sellTo(Audience audience) {
+        ticketOffice.plusMoney(audience.buy(ticketOffice.getTicket()));
+    }
+}
+```
+
+- TicketSeller가 TicketOffice에 있는 티켓을 마음대로 꺼내 Audience에 팔고 받은 돈을 마음대로 TicketOffice에 넣어버린다
+- TicketSeller로 부터 의존성을 제거
+
+```java
+
+public class TicketOffice {
+    private Long money;
+    private List<Ticket> tickets = new ArrayList<>();
+
+    public TicketOffice(Long money, Ticket ... tickets) {
+        this.money = money;
+        this.tickets.addAll(Arrays.asList(tickets));
+    }
+
+    public void sellTicketTo(Audience audience) {
+        plusMoney(audience.buy(getTicket()));
+    }
+
+    private Ticket getTicket() {
+        return tickets.remove(0);
+    }
+
+    public void minusMoney(Long money) {
+        this.money -= money;
+    }
+
+    private void plusMoney(Long money) {
+        this.money += money;
+    }
+}
+```
+
+- TicketOffice에 sellTicketTo 메서드 추가
+- TicketSeller가 티켓을 판매하고 관리하는 코드를 sellTicketTo 메서드로 옮긴다
+- 티켓을 판매한 돈을 관리하는 메서드의 접근제한자를 private으로 변경하고 외부에서 직저버 티켓을 관리할 수 없게 한다
+- 즉 , 티켓관리와 판매는 TicketOffice 내부에서만 할 수 있게 되었다
+- TicketSeller는 TicketOffice의 sellTicketTo 메서드를 호출하여 티켓 관리와 판매 역할을 위임한다
+- TicketSeller는 TicketOffice의 인터페이스에만 의존하게 된다
+- 상세 구현내용은 TicketOffice 내부로 감췄다
+
+### 절차적 프로그램의 문제점
+- 사람의 직관에 위배된다
+- 데이터의 변경으로 인한 영향을 지역적으로 고립시키기 어렵다
+- Audience와 TicketSeller의 내부를 변경하려면 Theater 클래스의 enter 메서드도 변경해야 한다
+- 변경은 버그를 부르고 버그에 대한 두려움은 코드를 변경하기 어렵게 만든다
+
+### 변경하기 쉬운 설계
+- 한번에 하나의 클래스만 변경할 수 있는 설계
+- 절차적 프로그래밍은 프로세스가 필요한 모든 데이터에 의존해야 하므로 변경에 취약할 수 밖에 없다
+- `해결방법`
+- 자신의 데이터를 스스로 처리하도록 프로세스의 단계를 Audience와 TicketSeller로 이동시킨다
+- 수정된 코드에서는 데이터를 사용하는 프로세스의 코드가 데이터를 소유하고 있는 Audience와 TicketSeller 클래스 내부로 옮겨졌다
+- `객체지향 프로그래밍` - 데이터와 프로세스가 동일한 모듈 내부에 위치하도록 프로그래밍 하는 방식

@@ -1,5 +1,6 @@
 package com.book.object.office;
 
+import com.book.object.audience.Audience;
 import com.book.object.ticket.Ticket;
 
 import java.util.ArrayList;
@@ -15,18 +16,19 @@ public class TicketOffice {
         this.tickets.addAll(Arrays.asList(tickets));
     }
 
-    public Ticket getTicket() {
+    public void sellTicketTo(Audience audience) {
+        plusMoney(audience.buy(getTicket()));
+    }
+
+    private Ticket getTicket() {
         return tickets.remove(0);
     }
 
-    public void minusMoney(Long money) {
+    private void minusMoney(Long money) {
         this.money -= money;
     }
 
-    public void plusMoney(Long money) {
+    private void plusMoney(Long money) {
         this.money += money;
     }
-
-
-
 }
