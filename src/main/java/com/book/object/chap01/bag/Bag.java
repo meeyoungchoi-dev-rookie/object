@@ -1,7 +1,7 @@
-package com.book.object.bag;
+package com.book.object.chap01.bag;
 
-import com.book.object.invitation.Invitation;
-import com.book.object.ticket.Ticket;
+import com.book.object.chap01.invitation.Invitation;
+import com.book.object.chap01.ticket.Ticket;
 
 public class Bag {
     private Long money;

@@ -1,7 +1,7 @@
-package com.book.object.ticketseller;
+package com.book.object.chap01.ticketseller;
 
-import com.book.object.audience.Audience;
-import com.book.object.office.TicketOffice;
+import com.book.object.chap01.audience.Audience;
+import com.book.object.chap01.office.TicketOffice;
 
 
 public class TicketSeller {

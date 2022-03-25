@@ -1,4 +1,4 @@
-package com.book.object.ticket;
+package com.book.object.chap01.ticket;
 
 public class Ticket {
     private Long fee;

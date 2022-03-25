@@ -1,8 +1,7 @@
-package com.book.object.theater;
+package com.book.object.chap01.theater;
 
-import com.book.object.audience.Audience;
-import com.book.object.ticket.Ticket;
-import com.book.object.ticketseller.TicketSeller;
+import com.book.object.chap01.audience.Audience;
+import com.book.object.chap01.ticketseller.TicketSeller;
 
 public class Theater {
     private TicketSeller ticketSeller;

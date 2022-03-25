@@ -1,4 +1,4 @@
-package com.book.object.invitation;
+package com.book.object.chap01.invitation;
 
 import java.time.LocalDateTime;
 

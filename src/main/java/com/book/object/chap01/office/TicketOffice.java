@@ -1,7 +1,7 @@
-package com.book.object.office;
+package com.book.object.chap01.office;
 
-import com.book.object.audience.Audience;
-import com.book.object.ticket.Ticket;
+import com.book.object.chap01.audience.Audience;
+import com.book.object.chap01.ticket.Ticket;
 
 import java.util.ArrayList;
 import java.util.Arrays;

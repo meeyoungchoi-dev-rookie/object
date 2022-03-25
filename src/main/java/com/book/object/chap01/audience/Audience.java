@@ -1,7 +1,7 @@
-package com.book.object.audience;
+package com.book.object.chap01.audience;
 
-import com.book.object.bag.Bag;
-import com.book.object.ticket.Ticket;
+import com.book.object.chap01.bag.Bag;
+import com.book.object.chap01.ticket.Ticket;
 
 public class Audience {
     private Bag bag;
