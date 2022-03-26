@@ -322,8 +322,62 @@ Movie 객체가 calculateMovieFee 메시지에 응답할 수 있다고 믿고 �
 ```
 
 ## 결론
-
 - 협력의 고나점에서 어떤 객체가 필요한지 결정해야 한다
 - 객체들의 공통 상태와 행위를 구현하기 위해 클래스를 작성한다
 - 객체는 메시지를 전송하고 수신함으로써 상호작용한다
 - 메서드는 객체가 메시지를 처리하기 위한 방법이다
+
+
+### 할인 정책과 할인 조건
+![할인 정책과 할인 조건 클래스 관계](https://user-images.githubusercontent.com/42866800/160238264-05139421-c022-4cdd-b42a-5e3fdd6d0386.png)
+-
+- 할인 정책은 금액 할인 정책과 비율 할인 정책으로 구분된다
+![할인정책_클래스_구조도](https://user-images.githubusercontent.com/42866800/160238280-6528d8da-c845-4a5e-9c37-5e07c2f97e30.png)
+  
+- 할인조건은 인터페이스로 구현한다
+- 순번 조건과 기간 조건이 존재한다
+![할인조건_클래스 구조도](https://user-images.githubusercontent.com/42866800/160238308-e71ac56b-5b93-4598-aa5b-f2d74712edee.png)
+
+## 오버라이딩 vs 오버로딩
+`오버라이딩`
+- 부모 클래스에 정의된 메서드를 자식 클래스에서 재정의 하는 것
+- 외부에서는 부모 클래스의 메서드가 보이지 않는다
+
+`오버로딩`
+- 메서드의 이름은 같지만 제공되는 파라미터가 다르다
+- 오버로딩한 원래의 메서드를 가리키지 않는다
+- 오버로딩한 메서드들은 공존한다
+
+### 생성자의 파라미터를 사용하여 객체 초기화
+
+- 생성자의 파라미터를 통해 객체 초기화에 필요한 정보 전달
+- 올바른 상태를 가진 객체가 생성됨을 보장할 수 있다
+
+```java
+Movie avatar = new Movie("아바타", 
+        Duration.ofMinutes(120),
+        Money.wons(10000),
+        new AmountDiscountPolicy(Money.wons(800),
+            new SequencceCondition(1),
+            new SequenceConditiond(10),
+            new PeriodCondition(DayOfWeek.MONDAY, LocalTime.of(10,0), LocalTime.of(11, 59)),
+            new PeriodCondition(DayOfWeeok.THURSDAY, LocalTime.of(10,0), LocalTime.of(20, 59))));
+```
+
+- 영화 아바타의 경우
+- 금액할인 정책을 갖는다
+- 할인조건으로 두개의 순번조건과 두개의 기간조건을 갖는다
+
+```java
+Movie titanic = new Movie("타이타닉", 
+        Duration.ofMinutes(180),
+        Money.wons(11000),
+        new PercentDiscountPolicy(0.1,
+                new PeriodCondition(DayOfWeek.TUESDAY, LocalTime.of(14,0), LocalTime.of(16,59)),
+                new SequenceCondition(2),
+                new PeriodCondition(DayOfWeek THURSDAY, LocalTime.of(10,0), LocalTime.of(13, 59))));
+```
+
+- 타이타닉의 경우
+- 비율 할인 정책을 취한다
+- 기간 할인 조건 두개와 순번 할인 조건 한개를 할인 조건으로 갖는다
