@@ -387,10 +387,55 @@ Movie titanic = new Movie("타이타닉",
 - 자식 클래스를 부모 클래스와 동일한 타입으로 간주할 수 있다
 - 컴파일러는 코드 상에서 부모 클래스가 나오는 모든 장소에서 자식 클래스를 사용하는 것을 허용한다
 
-### 업캐스팅(upcasting)
-![업캐스팅_자식 클래스가 부모 클래스의 타입으로 변환되는 것](https://user-images.githubusercontent.com/42866800/160276609-e02afc70-aab5-4f87-ab78-a00ad27ff1e2.png)
 
+```java
+public class Movie {
+	public Money calculateMovieFee(Screening screening) {
+    return fee.minus(discountPolicy.calculateDiscountAmount(screening));
+	}
+}
+
+```
+
+- discountPolicy는 어떤 할인정책 객체인지 궁금해 하지 않는다
+- 단지 협력하는 객체가 discountPolicy 타입으로 해석되어 calculateDiscountAmount 메시지를 이해하기만 하면 된다
+- 왜?
+- 상속 관계시 자식 클래스는 부모 클래스의 모든 메시지를 수신할 수 있기 때문
+- 따라서 자식 클래스는 부모 클래스와 동일한 타입으로 해석될 수 있다
+
+```java
+public Movie(String title, Money fee, DiscountPolicy discountPolicy) {
+    this.title = title;
+    this.fee = fee;
+    this.discountPolicy = discountPolicy;
+}
+```
+
+- Movie 객체를 생성할 때 타입이 DiscountPolicy 타입임에도 AmountDiscountPolicy 객체와 PercentDiscountPolicy 객체를 생성할 수 있는 이유
+- 상속 관계에서 자식 클래스를 부모 클래스와 동일한 타입으로 간주할 수 있기 때문이다
+
+
+### 업캐스팅(upcasting)
+![업캐스팅_자식 클래스가 부모 클래스의 타입으로 변환되는 것](https://user-images.githubusercontent.com/42866800/160416579-34bca0fd-fb9e-4247-aca8-a0c994da1500.png)
 - 자식 클래스가 부모 클래스를 대신 하는 것을 업캐스팅이라고 부른다
 - 왜?
 - 클래스 다이어그램을 작성할 때 부모 클래스를 자식 클래스의 위에 위치시키기 때문이다
 - 자식 클래스가 위에 위치한 부모 클래스로 자동으로 타입 캐스팅 되는 것처럼 보이기 때문에 업캐스팅 이라는 용어를 사용한다
+
+
+## 다형성
+![할인 정책과 할인 조건에 적용된 다형성](https://user-images.githubusercontent.com/42866800/160417005-0e636c58-bd17-46a0-8215-4d8023f7bbdf.png)
+
+- 동일한 메시지를 수신했을 때 객체의 타입에 따라 다르게 응답할 수 있는 능력
+  - 다형적인 협력에 참여하는 객체들은 모두 같은 메시지를 이해할 수 있어야 한다
+  - 인터페이스가 동일해야 한다
+- 다형성은 컴파일 시간 의존성과 실행 시간 의존성을 다르게 만들 수 있다
+
+### 인터페이스와 다형성
+
+- 구현은 공유할 필요가 없고 인터페이스만 공유하고 싶은 경우
+- 구현에 대한 고려 없이 다형적인 협력에 참여하는 클래스들이 공유 가능한 인터페이스
+  ![할인조건에 적용된 인터페이스와 다형성](https://user-images.githubusercontent.com/42866800/160417538-0782a1af-2932-41de-b602-066f4fed040e.png)
+- DiscountCondition 인터페이스를 실체화 하고 있는 SequenceCondition과 PeriodCondition은 동일한 인터페이스를 공유한다
+- 즉 , DiscountCondition 을 대신해서 사용될 수 있다
+- 인터페이스를 구현한 클래스에도 업캐스팅이 적용되어 다형적으로 협력할 수 있다
