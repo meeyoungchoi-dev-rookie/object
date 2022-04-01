@@ -607,3 +607,32 @@ public Movie(String title, Money fee, DiscountPolicy discountPolicy) {
 <aside>
 📌 객체의 책임에 집중해야 유연하고 견고한 객체지향 시스템을 만들 수 있다
 </aside>
+
+### 역할과 추상화
+
+- 추상화를 사용하면 도메인 모델을 상위 수준에서 단순화 할 수 있다
+- 설계가 유연해진다
+- 왜?
+- 공통의 책임을 바탕으로 객체의 종류와 내부 구현을 숨기기 떄문이다
+
+- 아래의 구조도는 영화 얘매 요금을 계산하는 데 필요한 할인 정책과 할인 조건의 종류를 파악할 수 있다
+  ![영화 얘매 요금을 계산하는데 필요한 할인 정책과 할인 조건의 구조](https://user-images.githubusercontent.com/42866800/161234061-606a8a74-a244-4c9f-96c1-53493c4f3e0a.png)
+- 추상화를 통해 할인 정책과 할인 조건이 조합되어 영화 얘매 금액이 결정되는 것을 알 수 있다
+  ![할인 정책와 할인 조건에 대한 추상화는 객체들 사이의 관계를 파악하는데 유용하다](https://user-images.githubusercontent.com/42866800/161234137-2d4916dc-0cd1-424c-93ea-a471a8b5f1f1.png)
+- 구체적인 할인 정책의 종류를 추상화한 DiscountPolicy 추상 클래스와 할인 조건의 종류를 추상화한 DiscountCondition 인터페이스를 통해 협력을 표현
+- DiscountPolicy와 DiscountCondition 역할을 수행할 수 있는 객체라면 얘매 요금 계산 협력에 참여할 수 있다
+- 객체 사이의 핵심적인 상호작용을 파악할수 있다
+  - 영화 얘매 요금을 계산하기 위해 DiscountPolicy 와 DiscountCondition 의 객체를 조합해야 한다는 것을 파악할 수 있다
+  - Movie 가 DiscountPolicy에게 메시지를 전송하고 DiscountPolicy가 DiscountCondition에게 메시지를 전송하며 협력한다는 것을 알수 있다
+  - 구체적인 할인 정책과 할인 조건이 DiscountPolicy와 DiscountCondition을 대체할 것이다
+  - 협력 안에서 동일한 책임을 수행하는 객체들은 동일한 역할을 수행하기 때문에 대체 가능하다
+  - 역할은 다양한 환경에서 다양한 객체들을 수용할 수 있게 도와주므로 협력을 유연하게 만들어준다
+
+- 구체적인 객체로 대체 가능한 DiscountPolicy 와 DiscountCondition이 역할이다
+- 역할을 사용하면 동일한 협력을 수행하는 객체를 추상화 할 수 있다
+![역할은 협력을 추상화 한다](https://user-images.githubusercontent.com/42866800/161234185-166acc8b-ad8a-4f2c-b0ea-67e3d59d3818.png)
+
+<aside>
+📌 협력 안에서 역할을 추상화 하면 기존 코드를 수정하지 않고 새로운 행동을 추가할 수 있다
+
+</aside>
