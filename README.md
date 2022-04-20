@@ -806,3 +806,113 @@ public class Event {
 - 객체자 참여할 협력을 결정하고 협력에 필요한 책임을 수행하기 위해 어떤 객체가 필요한지를 고민해야 한다
 - 책임을 다향한 방식으로 수행해야 할 때만 타입 계층 안에 각 절차를 추상화 해야한다
 - 타입 계층과 다형성은 협력안에서 책임을 수행하는 방법에 대해 고민한 결화물 이어야 한다
+
+-----------------------------------------------------------------------
+
+# 의존성 이해하기
+# 의존성
+
+- 협력관계에서 어떤 객체가 다른 객체를 필요로 할때 두객체 사이에 의존성이 생기게 된다
+- 실행시점과 변경시점 의존성이 다르다
+- 왜?
+- 의존하고 있는 대상이 변경되면 의존객체가 영향을 받을 수 있기 때문이다
+
+## 변경과 의존성
+
+- 실행시점 - 실행시점에 의존객체가 반드시 존재해야 한다
+- 구현시점 - 의존 대상 객체가 변경되는 경우 의존하는 객체도 함게 변경된다
+- 의존성은 단방향이다
+
+```java
+public class PeriodCondition implements DiscountCondition {
+
+    private DayOfWeek dayOfWeek;
+    private LocalTime startTime;
+    private LocalTime endTime;
+
+    ...
+
+    @Override
+    public boolean isSatisfiedBy(Screening screening) {
+        return screening.getStartTime().getDayOfWeek().equals(dayOfWeek) &&
+                startTime.compareTo(screening.getStartTime().toLocalTime()) <= 0 &&
+                endTime.compareTo(screening.getStartTime().toLocalTime()) >= 0;
+    }
+}
+```
+
+- PeriodCondition 클래스의 isSatisfiedBy 메서드는 Screening 객체에게 getStartTime이라는 메시지를 전송한다
+- 실행 시점에 PeriodCondition 인스턴스가 정상적으로 동작하기 위해서는 Screening 인스턴스가 존재해야 한다
+- 즉 , Screening이 변경될 때 PeriodCondtion이 영향을 받게 된다
+- 어떤 형태로든 DayOfWeek , LocalTime , Screening, DiscountCondition이 변경되면 PeriodCondition도 함께 변경되게 된다
+-
+
+<aside>
+📌 PeriodCondition이 DiscountCondition에 의존하는 이유는 인터페이스에 정의된 오퍼레이션을 퍼블릭 인터페이스의 일부로 포함시키기 위함이다
+
+</aside>
+
+## 의존성 전이
+
+- 의존성은 전이 될 수 있다
+- 직접 의존성 - 한 요소가 다른 요소에 직접 의존
+- 간접 의존성 - 직접적인 고나계는 존재하지 않지만 의존성 전이에 의해 영향이 전파된다
+- PeriodCondtion은 Screening에 의존한다
+- Screening이 의존하고 있는 Movie , LocalDateTime도 PeriodCondtion이 변경되면 영향을 받게 된다
+- 즉 , Screening이 갖고있는 의존성이 Screening에 의존하고 있는 PeriodCondtion에게도 영향을 준다
+-
+
+<aside>
+📌 의존성이 실제로 전이될지 여부는 변경의 방향과 캡슐화의 정도에 따라 달라진다
+
+</aside>
+
+- Screening이 의존하고 있는 어떤 요소의 구현이나 인터페이스가 변경되는 경우 Screening이 내부 구현을 효과적으로 캡슐화 하고 있다면 의존하고 있는 PeriodCondition까지는 변경이 전파되지 않을 것이다
+- `직접 의존성` - 한 요소가 다른 요소에 직접 의존하는 경우
+- `간접 의존성` - 직접적인 관계는 존재하지 않지만 의존성 전이에 의해 영햐잉 전파되는 경우
+
+<aside>
+📌 의존성의 대상은 객체일 수도 있고 모듈이나 더 큰 규모의 실행 시스템일 수도 있다 
+하지만 의존성의 본질은 변하지 않는다
+의존성이란 의존하고 있는 대상의 변경에 영향을 받을 수 있는 가능성이다
+
+</aside>
+
+## 런타임 의존성과 컴파일타임 의존성
+
+- 런타임 의존성과 컴파일타임 의존성이 다를 수 있다
+- 어떤 클래스의 인스턴스가 다양한 클래스와 협력하기 위해서는 협력할 인스턴스의 구체적인 클래스를 알아서는 안된다
+- 실제로 협력할 객체가 무엇인지는 런타임에 결정되어야 한다
+- 컴파일 타임 구조와 런타임 구조 사이가 멀수록 설계가 유현해지고 재사용 가능해 진다
+
+```java
+public class Movie {
+
+    private String title;
+    private Money fee;
+    private DiscountPolicy discountPolicy;
+
+    public Movie(String title, Money fee, DiscountPolicy discountPolicy) {
+        this.title = title;
+        this.fee = fee;
+        this.discountPolicy = discountPolicy;
+    }
+
+    ...
+
+}
+```
+
+- Movie 클래스에서 AmoundDiscountPolicy 클래스와 PercentDiscountPolicy 클래스로 어떤 의존성도 존재하지 않는다
+- Movie 클래스는 오직 추상 클래스인 DiscountPolicy 클래스에만 의존한다
+- 즉  , 코드 작성시에는 Movie 클래스는 할인 정책을 구현한 두 클래스의 존재를 모른다
+- 실행시점의 Movie 객체는 두 클래스의 인스턴스와 협력할 수 있게 된다
+-
+
+<aside>
+📌 유연하고 재사용 가능한 설계를 창조하기 위해서는 동일한 소스코드 구조를 가지고 다양한 실행 구조를 만들 수 있어야 한다
+
+</aside>
+
+- 어떤 클래스의 인스턴스가 다양한 클래스의 인스턴스와 협력하기 위해서는 협력할 인스턴스의 구체적인 클래스를 알아서는 안된다
+- 실제로 협력할 객체가 어떤 것인지는 런타임에 해결해야 한다
